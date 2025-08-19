@@ -30,6 +30,6 @@ func main() {
 	go randSlice(doubleCh)
 
 	for range 10 {
-		fmt.Println(<-doubleCh)
+		fmt.Printf("%d ", <-doubleCh)
 	}
 }
