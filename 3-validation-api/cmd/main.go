@@ -2,7 +2,7 @@ package main
 
 import (
 	"demo/validation/3-validation-api/configs"
-	"demo/validation/internal/verify"
+	"demo/validation/3-validation-api/verify"
 	"flag"
 	"fmt"
 	"net/http"
@@ -15,6 +15,7 @@ func main() {
 	conf := configs.LoadConfig()
 
 	router := http.NewServeMux()
+
 	verify.NewVerifyHandler(router, verify.VerifyHandlerDeps{
 		Config: conf,
 	})
