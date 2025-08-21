@@ -1,12 +1,12 @@
 package verify
 
 import (
-	"crypto/sha256"
+	"crypto/rand"
 	"demo/validation/3-validation-api/configs"
 	"demo/validation/3-validation-api/pkg/email"
 	"demo/validation/3-validation-api/pkg/res"
+	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 )
@@ -60,9 +60,7 @@ func NewVerifyHandler(router *http.ServeMux, deps VerifyHandlerDeps) {
 
 func SaveHash(email string) (*HashItem, error) {
 
-	h := sha256.New()
-	h.Write([]byte(email))
-	hash := fmt.Sprintf("%x", h.Sum(nil))
+	hash, _ := GenerateRandomHash(16)
 	newItem := HashItem{
 		Email: email,
 		Hash:  hash,
@@ -85,24 +83,33 @@ func SaveHash(email string) (*HashItem, error) {
 }
 
 func CheckHash(hash string) bool {
+	result := false
 	fp := "verify.json"
 	file, err := os.OpenFile(fp, os.O_RDWR, 0644)
 	if err != nil {
-		return false
+		result = false
 	}
 	defer file.Close()
 
 	var data HashItem
 
 	if err := json.NewDecoder(file).Decode(&data); err != nil {
-		return false
+		result = false
 	}
 
 	if data.Hash == hash {
-		return true
+		result = true
 	}
 
 	file.Truncate(0)
 	file.Seek(0, 0)
-	return false
+	return result
+}
+
+func GenerateRandomHash(n int) (string, error) {
+	bytes := make([]byte, n)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
 }
