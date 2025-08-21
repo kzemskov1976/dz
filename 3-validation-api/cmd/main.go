@@ -2,7 +2,7 @@ package main
 
 import (
 	"demo/validation/3-validation-api/configs"
-	"demo/validation/3-validation-api/verify"
+	"demo/validation/3-validation-api/internal/verify"
 	"flag"
 	"fmt"
 	"net/http"
