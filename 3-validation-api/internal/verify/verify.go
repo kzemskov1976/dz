@@ -38,6 +38,7 @@ func (handler *VerifyHandler) Send() http.HandlerFunc {
 			res.Json(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		res.Json(w, "Письмо для подтверждения отправлено", http.StatusOK)
 	}
 }
 
@@ -68,39 +69,15 @@ func SaveHash(email string) (*HashItem, error) {
 	}
 
 	fp := "verify.json"
-	file, err := os.OpenFile(fp, os.O_RDWR|os.O_CREATE, 0644)
+	file, err := os.OpenFile(fp, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	var hashArr []HashItem
-
-	info, err := file.Stat()
-	if err != nil {
-		return nil, err
-	}
-
-	if info.Size() != 0 {
-		if err := json.NewDecoder(file).Decode(&hashArr); err != nil {
-			return nil, err
-		}
-		if len(hashArr) > 0 {
-			for _, item := range hashArr {
-				if item.Email == email {
-					return &newItem, nil
-				}
-			}
-		}
-		file.Truncate(0)
-		file.Seek(0, 0)
-	}
-
-	hashArr = append(hashArr, newItem)
-
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(hashArr); err != nil {
+	if err := encoder.Encode(newItem); err != nil {
 		return nil, err
 	}
 
@@ -109,22 +86,23 @@ func SaveHash(email string) (*HashItem, error) {
 
 func CheckHash(hash string) bool {
 	fp := "verify.json"
-	file, err := os.OpenFile(fp, os.O_RDONLY, 0644)
+	file, err := os.OpenFile(fp, os.O_RDWR, 0644)
 	if err != nil {
 		return false
 	}
 	defer file.Close()
 
-	var hashArr []HashItem
+	var data HashItem
 
-	if err := json.NewDecoder(file).Decode(&hashArr); err != nil {
+	if err := json.NewDecoder(file).Decode(&data); err != nil {
 		return false
 	}
 
-	for _, item := range hashArr {
-		if item.Hash == hash {
-			return true
-		}
+	if data.Hash == hash {
+		return true
 	}
+
+	file.Truncate(0)
+	file.Seek(0, 0)
 	return false
 }
