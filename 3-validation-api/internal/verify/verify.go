@@ -83,27 +83,30 @@ func SaveHash(email string) (*HashItem, error) {
 }
 
 func CheckHash(hash string) bool {
-	result := false
 	fp := "verify.json"
 	file, err := os.OpenFile(fp, os.O_RDWR, 0644)
 	if err != nil {
-		result = false
+		return false
 	}
 	defer file.Close()
 
 	var data HashItem
 
 	if err := json.NewDecoder(file).Decode(&data); err != nil {
-		result = false
+		file.Truncate(0)
+		file.Seek(0, 0)
+		return false
 	}
 
 	if data.Hash == hash {
-		result = true
+		file.Truncate(0)
+		file.Seek(0, 0)
+		return true
 	}
 
 	file.Truncate(0)
 	file.Seek(0, 0)
-	return result
+	return false
 }
 
 func GenerateRandomHash(n int) (string, error) {
