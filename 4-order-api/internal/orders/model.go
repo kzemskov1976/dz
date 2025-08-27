@@ -11,3 +11,10 @@ type Product struct {
 	Description string
 	Images      pq.StringArray
 }
+
+func NewProduct(req ProductCreateRequest) *Product {
+	return &Product{
+		Name:        req.Name,
+		Description: req.Description,
+	}
+}

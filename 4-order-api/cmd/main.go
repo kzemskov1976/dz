@@ -2,6 +2,7 @@ package main
 
 import (
 	"demo/order/4-order-api/configs"
+	"demo/order/4-order-api/internal/orders"
 	"demo/order/4-order-api/internal/verify"
 	"demo/order/4-order-api/pkg/db"
 	"flag"
@@ -14,12 +15,16 @@ func main() {
 	flag.Parse()
 
 	conf := configs.LoadConfig()
-	_ = db.NewDB(conf)
+	db := db.NewDB(conf)
+	repo := orders.NewProductRepository(db)
 
 	router := http.NewServeMux()
 
 	verify.NewVerifyHandler(router, verify.VerifyHandlerDeps{
 		Config: conf,
+	})
+	orders.NewProductHandler(router, orders.ProductHandlerDeps{
+		ProductRepository: repo,
 	})
 
 	addr := fmt.Sprintf(":%d", *port)
