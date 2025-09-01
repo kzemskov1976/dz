@@ -5,6 +5,7 @@ import (
 	"demo/order/4-order-api/internal/orders"
 	"demo/order/4-order-api/internal/verify"
 	"demo/order/4-order-api/pkg/db"
+	"demo/order/4-order-api/pkg/middleware"
 	"flag"
 	"fmt"
 	"net/http"
@@ -31,7 +32,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    addr,
-		Handler: router,
+		Handler: middleware.Logging(router),
 	}
 	fmt.Printf("Server listening on port %d\n", *port)
 	server.ListenAndServe()
