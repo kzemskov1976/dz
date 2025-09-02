@@ -2,7 +2,9 @@ package main
 
 import (
 	"demo/order/5-order-api/configs"
+	"demo/order/5-order-api/internal/auth"
 	"demo/order/5-order-api/internal/orders"
+	"demo/order/5-order-api/internal/user"
 	"demo/order/5-order-api/internal/verify"
 	"demo/order/5-order-api/pkg/db"
 	"demo/order/5-order-api/pkg/middleware"
@@ -17,15 +19,20 @@ func main() {
 
 	conf := configs.LoadConfig()
 	db := db.NewDB(conf)
-	repo := orders.NewProductRepository(db)
+	repoProduct := orders.NewProductRepository(db)
+	repoUser := user.NewUserRepository(db)
 
 	router := http.NewServeMux()
 
+	auth.NewAuthHandler(router, auth.AuthHandlerDeps{
+		UserRepository: repoUser,
+		Config:         conf,
+	})
 	verify.NewVerifyHandler(router, verify.VerifyHandlerDeps{
 		Config: conf,
 	})
 	orders.NewProductHandler(router, orders.ProductHandlerDeps{
-		ProductRepository: repo,
+		ProductRepository: repoProduct,
 	})
 
 	addr := fmt.Sprintf(":%d", *port)
