@@ -59,7 +59,9 @@ func (handler *AuthHandler) Verify() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
-		token, err := jwt.NewJWT(handler.Config.Secret).Create(user.Phone)
+		token, err := jwt.NewJWT(handler.Config.Secret).Create(jwt.JWTData{
+			Phone: user.Phone,
+		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

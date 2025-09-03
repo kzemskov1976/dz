@@ -33,6 +33,7 @@ func main() {
 	})
 	orders.NewProductHandler(router, orders.ProductHandlerDeps{
 		ProductRepository: repoProduct,
+		Config:            conf,
 	})
 
 	addr := fmt.Sprintf(":%d", *port)
