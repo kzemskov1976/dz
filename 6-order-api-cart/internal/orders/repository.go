@@ -3,6 +3,7 @@ package orders
 import (
 	"demo/order/6-order-api-cart/pkg/db"
 
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -82,7 +83,7 @@ func (repo *ProductRepository) GetOrdersByUserId(userId uint) (*[]db.Order, erro
 
 func (repo *ProductRepository) GetOrderByOrderId(userId, orderId uint) (*db.Order, error) {
 	var order db.Order
-	err := repo.Database.DB.Preload("Products").Where(db.Order{UserID: userId}).First(&order).Error
+	err := repo.Database.DB.Preload("Products").Where(db.Order{Model: gorm.Model{ID: orderId}, UserID: userId}).First(&order).Error
 	if err != nil {
 		return nil, err
 	}

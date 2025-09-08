@@ -1,7 +1,7 @@
 package req
 
 import (
-	"demo/order/5-order-api/pkg/res"
+	"demo/order/6-order-api-cart/pkg/res"
 	"net/http"
 )
 

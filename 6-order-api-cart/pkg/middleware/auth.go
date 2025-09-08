@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
-	"demo/order/5-order-api/configs"
-	"demo/order/5-order-api/pkg/jwt"
+	"demo/order/6-order-api-cart/configs"
+	"demo/order/6-order-api-cart/pkg/jwt"
 	"net/http"
 	"strings"
 )
