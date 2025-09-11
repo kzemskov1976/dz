@@ -13,10 +13,7 @@ import (
 	"net/http"
 )
 
-func main() {
-	port := flag.Int("port", 8081, "Listenting port")
-	flag.Parse()
-
+func App() http.Handler {
 	conf := configs.LoadConfig()
 	db := db.NewDB(conf)
 	repoProduct := orders.NewProductRepository(db)
@@ -36,6 +33,15 @@ func main() {
 		Config:            conf,
 		IntUserRepository: repoUser,
 	})
+
+	return router
+}
+
+func main() {
+	port := flag.Int("port", 8081, "Listenting port")
+	flag.Parse()
+
+	router := App()
 
 	addr := fmt.Sprintf(":%d", *port)
 

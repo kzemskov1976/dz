@@ -43,7 +43,7 @@ func (handler *ProductHandler) CreateOrder() http.HandlerFunc {
 				return
 			}
 		}
-		res.Json(w, OrderCreateResponse{OrderId: order.ID}, http.StatusAccepted)
+		res.Json(w, OrderCreateResponse{OrderId: order.ID}, http.StatusCreated)
 	}
 }
 
